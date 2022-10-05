@@ -2137,6 +2137,8 @@ func (q *qemu) AddDevice(ctx context.Context, devInfo interface{}, devType Devic
 			vhostDev.DevID = id
 
 			q.qemuConfig.Devices, err = q.arch.appendVhostUserDevice(ctx, q.qemuConfig.Devices, vhostDev)
+		} else if q.config.SharedFS == config.VirtioNoneFS {
+			q.Logger().WithField("volume-type", "virtio-none").Info("skipping volume")
 		} else {
 			q.Logger().WithField("volume-type", "virtio-9p").Info("adding volume")
 			q.qemuConfig.Devices, err = q.arch.append9PVolume(ctx, q.qemuConfig.Devices, v)

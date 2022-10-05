@@ -495,7 +495,7 @@ func (h hypervisor) blockDeviceAIO() (string, error) {
 }
 
 func (h hypervisor) sharedFS() (string, error) {
-	supportedSharedFS := []string{config.Virtio9P, config.VirtioFS, config.VirtioFSNydus}
+	supportedSharedFS := []string{config.Virtio9P, config.VirtioFS, config.VirtioFSNydus, config.VirtioNoneFS}
 
 	if h.SharedFS == "" {
 		return config.VirtioFS, nil

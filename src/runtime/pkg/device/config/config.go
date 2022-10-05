@@ -81,6 +81,9 @@ const (
 
 	// VirtioFSNydus means use nydus for the shared file system
 	VirtioFSNydus = "virtio-fs-nydus"
+
+	// Do not use a shared file system
+	VirtioNoneFS = "none"
 )
 
 const (

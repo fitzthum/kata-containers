@@ -733,7 +733,7 @@ func addHypervisorBlockOverrides(ocispec specs.Spec, sbConfig *vc.SandboxConfig)
 
 func addHypervisorVirtioFsOverrides(ocispec specs.Spec, sbConfig *vc.SandboxConfig, runtime RuntimeConfig) error {
 	if value, ok := ocispec.Annotations[vcAnnotations.SharedFS]; ok {
-		supportedSharedFS := []string{config.Virtio9P, config.VirtioFS}
+		supportedSharedFS := []string{config.Virtio9P, config.VirtioFS, config.VirtioNoneFS}
 		valid := false
 		for _, fs := range supportedSharedFS {
 			if fs == value {

@@ -246,7 +246,7 @@ impl AgentConfig {
             // or if it can't be parsed properly.
             if param.starts_with(format!("{}=", CONFIG_FILE).as_str()) {
                 let config_file = get_string_value(param)?;
-                return AgentConfig::from_config_file(&config_file);
+                config = AgentConfig::from_config_file(&config_file)?;
             }
 
             // parse cmdline flags

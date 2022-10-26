@@ -30,6 +30,7 @@ const CONTAINER_POLICY_FILE: &str = "agent.container_policy_file";
 const HTTPS_PROXY: &str = "agent.https_proxy";
 const NO_PROXY: &str = "agent.no_proxy";
 const ENABLE_DATA_INTEGRITY: &str = "agent.data_integrity";
+const AA_KBC_PARAMS_OPTION: &str = "agent.aa_kbc_params";
 
 const DEFAULT_LOG_LEVEL: slog::Level = slog::Level::Info;
 const DEFAULT_HOTPLUG_TIMEOUT: time::Duration = time::Duration::from_secs(3);
@@ -323,6 +324,13 @@ impl AgentConfig {
                 ENABLE_DATA_INTEGRITY,
                 config.data_integrity,
                 get_bool_value
+            );
+
+            parse_cmdline_param!(
+                param,
+                AA_KBC_PARAMS_OPTION,
+                config.aa_kbc_params,
+                get_string_value
             );
         }
 

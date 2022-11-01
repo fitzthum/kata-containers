@@ -50,7 +50,8 @@ func (caps *Capabilities) SetMultiQueueSupport() {
 
 // IsFsSharingSupported tells if an hypervisor supports host filesystem sharing.
 func (caps *Capabilities) IsFsSharingSupported() bool {
-	return caps.flags&fsSharingSupported != 0
+	//return caps.flags&fsSharingSupported != 0
+	return false
 }
 
 // SetFsSharingUnsupported sets the host filesystem sharing capability to true.

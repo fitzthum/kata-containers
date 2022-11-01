@@ -816,7 +816,7 @@ func setupStorages(ctx context.Context, sandbox *Sandbox) []*grpc.Storage {
 			}
 
 			storages = append(storages, sharedVolume)
-		} else {
+		} else if sharedFS != config.VirtioNoneFS {
 			sharedDir9pOptions = append(sharedDir9pOptions, fmt.Sprintf("msize=%d", sandbox.config.HypervisorConfig.Msize9p))
 
 			sharedVolume := &grpc.Storage{
@@ -1163,10 +1163,12 @@ func (k *kataAgent) createContainer(ctx context.Context, sandbox *Sandbox, c *Co
 	// Share the container rootfs -- if its block based, we'll receive a non-nil storage object representing
 	// the block device for the rootfs, which us utilized for mounting in the guest. This'll be handled
 	// already for non-block based rootfs
+
+	// this goes to linux shared fs, which should do anythign
 	if sharedRootfs, err = sandbox.fsShare.ShareRootFilesystem(ctx, c); err != nil {
 		return nil, err
 	}
-
+	// we don't execute here
 	if sharedRootfs.storage != nil {
 		// Add rootfs to the list of container storage.
 		// We only need to do this for block based rootfs, as we
@@ -1184,6 +1186,7 @@ func (k *kataAgent) createContainer(ctx context.Context, sandbox *Sandbox, c *Co
 	sharedDirMounts := make(map[string]Mount)
 	ignoredMounts := make(map[string]Mount)
 
+	// maybe this tho.
 	shareStorages, err := c.mountSharedDirMounts(ctx, sharedDirMounts, ignoredMounts)
 	if err != nil {
 		return nil, err
@@ -1215,6 +1218,8 @@ func (k *kataAgent) createContainer(ctx context.Context, sandbox *Sandbox, c *Co
 
 	// We replace all OCI mount sources that match our container mount
 	// with the right source path (The guest one).
+
+	// Get rid of this becuse it might be referencing the host paths.
 	if err = k.replaceOCIMountSource(ociSpec, sharedDirMounts); err != nil {
 		return nil, err
 	}
@@ -1229,6 +1234,7 @@ func (k *kataAgent) createContainer(ctx context.Context, sandbox *Sandbox, c *Co
 
 	// Block based volumes will require some adjustments in the OCI spec, and creation of
 	// storage objects to pass to the agent.
+
 	volumeStorages, err := k.handleBlkOCIMounts(c, ociSpec)
 	if err != nil {
 		return nil, err
@@ -1242,7 +1248,8 @@ func (k *kataAgent) createContainer(ctx context.Context, sandbox *Sandbox, c *Co
 	}
 
 	// We need to give the OCI spec our absolute rootfs path in the guest.
-	grpcSpec.Root.Path = sharedRootfs.guestPath
+	//grpcSpec.Root.Path = sharedRootfs.guestPath
+	grpcSpec.Root.Path = "/run/kata-containers/shared/containers"
 
 	sharedPidNs := k.handlePidNamespace(grpcSpec, sandbox)
 

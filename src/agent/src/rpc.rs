@@ -185,16 +185,21 @@ impl AgentService {
         &self,
         req: protocols::agent::CreateContainerRequest,
     ) -> Result<()> {
+        // irrelevant
         let cid = req.container_id.clone();
 
+        // irrelevant
         kata_sys_util::validate::verify_id(&cid)?;
 
+        // irrelevant
         let mut oci_spec = req.OCI.clone();
         let use_sandbox_pidns = req.get_sandbox_pidns();
 
         let sandbox;
         let mut s;
 
+        // getting the spec from grpc 
+        // processes the root but nothign significant
         let mut oci = match oci_spec.as_mut() {
             Some(spec) => rustjail::grpc_to_oci(spec),
             None => {

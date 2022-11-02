@@ -240,6 +240,7 @@ impl AgentConfig {
         let cmdline = fs::read_to_string(file)?;
         let params: Vec<&str> = cmdline.split_ascii_whitespace().collect();
 
+        let mut using_config_file = false;
         // Check if there is config file before parsing params that might
         // override values from the config file.
         for param in params.iter() {
@@ -250,6 +251,7 @@ impl AgentConfig {
             if param.starts_with(format!("{}=", CONFIG_FILE).as_str()) {
                 let config_file = get_string_value(param)?;
                 config = AgentConfig::from_config_file(&config_file)?;
+                using_config_file = true;
                 break;
             }
         }
@@ -349,7 +351,9 @@ impl AgentConfig {
         }
 
         // We did not get a configuration file: allow all endpoints.
-        config.endpoints.all_allowed = true;
+        if !using_config_file {
+            config.endpoints.all_allowed = true;
+        }
 
         Ok(config)
     }
@@ -1621,6 +1625,9 @@ Caused by:
         let agent_config = r#"
                dev_mode = false
                server_addr = 'vsock://8:2048'
+
+               [endpoints]
+               allowed = ["CreateContainer", "StartContainer"]
               "#;
 
         let config_path = dir.path().join("agent-config.toml");
@@ -1645,5 +1652,15 @@ Caused by:
 
         // Should be from agent config
         assert_eq!(config.server_addr, "vsock://8:2048");
+
+        // Should be from agent config
+        assert_eq!(
+            config.endpoints.allowed,
+            vec!["CreateContainer".to_string(), "StartContainer".to_string()]
+                .iter()
+                .cloned()
+                .collect()
+        );
+        assert!(!config.endpoints.all_allowed);
     }
 }

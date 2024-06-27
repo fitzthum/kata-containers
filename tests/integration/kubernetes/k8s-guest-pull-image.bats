@@ -13,10 +13,6 @@ setup() {
 	    skip "${KATA_HYPERVISOR} is already running all the tests with guest-pulling, skip this specific one"
     fi
 
-    if is_confidential_hardware; then
-        skip "Due to issues related to pull-image integration skip tests for ${KATA_HYPERVISOR}."
-    fi
-
     if ! is_confidential_runtime_class; then
         skip "Test not supported for ${KATA_HYPERVISOR}."
     fi
